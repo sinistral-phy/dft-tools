@@ -1,0 +1,258 @@
+import elastic
+# We will use some basic scientific Python modules for plotting
+import matplotlib.pyplot as plt
+import mpl_toolkits.mplot3d.axes3d as axes3d
+import numpy as np
+import pandas as pd
+
+tensor_string = """
+  219.890    137.847    120.221      0.000      0.000      0.000
+    137.847    219.890    120.221      0.000      0.000      0.000
+    120.221    120.221    267.554      0.000      0.000      0.000
+      0.000      0.000      0.000     60.408      0.000      0.000
+      0.000      0.000      0.000      0.000     60.408      0.000
+      0.000      0.000      0.000      0.000      0.000     41.021
+ 
+"""
+material1=elastic.Elastic(tensor_string)
+plt.rcParams['font.family'] = 'serif'
+#XY plane Linear Compressibility: 
+phi = np.linspace(0, 2 * np.pi, 200)
+f = np.vectorize(material1.LC_2)
+r = f(np.pi / 2, phi)
+fig, axs = plt.subplots(2, 2, figsize=(10, 10), subplot_kw={'projection': 'polar'})
+
+# XY plane
+axs[0, 0].plot(phi, r, color='xkcd:purple', label="XY Plane")
+axs[0, 0].fill(phi, r, color='xkcd:orange', alpha=0.5)
+axs[0, 0].set_title("XY Plane")
+axs[0, 0].grid(True)
+#XZ,YZ plane linear compresisbility:
+theta = np.linspace(0, 2*np.pi, 200)
+f = np.vectorize(material1.LC_2)
+r = f(theta, 0)
+# XZ plane
+axs[0, 1].plot(theta, r, color='xkcd:purple', label="XZ Plane")
+axs[0, 1].fill(theta, r, color='xkcd:orange', alpha=0.5)
+axs[0, 1].set_title("XZ Plane")
+axs[0, 1].grid(True)
+
+theta = np.linspace(0, 2*np.pi, 200)
+f = np.vectorize(material1.LC_2)
+r = f(theta, np.pi/2)
+axs[1, 0].plot(theta, r, color='xkcd:purple', label="YZ Plane")
+axs[1, 0].fill(theta, r, color='xkcd:orange', alpha=0.5)
+axs[1, 0].set_title("YZ Plane")
+axs[1, 0].grid(True)
+
+def spherical_grid():
+    theta = np.linspace(0, 2 * np.pi, 200)
+    phi = np.linspace(0, np.pi, 100)
+    return np.meshgrid(theta, phi)
+
+# Compute spherical coordinates
+def spherical_coord(r, theta, phi):
+    x = r * np.sin(phi) * np.cos(theta)
+    y = r * np.sin(phi) * np.sin(theta)
+    z = r * np.cos(phi)
+    return x, y, z
+
+
+#Linear compressibility 3D:
+f = np.vectorize(material1.LC_2)
+theta, phi = spherical_grid()
+r = f(theta, phi)
+x, y, z = spherical_coord(r, theta, phi)
+axs[1, 1].remove()  # Remove the empty subplot
+ax_3d = fig.add_subplot(2, 2, 4, projection='3d')
+ax_3d.plot_surface(x, y, z, cmap='inferno')
+ax_3d.set_xlabel("X")
+ax_3d.set_ylabel("Y")
+ax_3d.set_zlabel("Z")
+ax_3d.set_title("3D Visualization")
+surf = ax_3d.plot_surface(x, y, z, cmap='inferno')
+cbar = fig.colorbar(surf, ax=ax_3d, pad=0.1, shrink=0.8)
+cbar.set_label("Linear Compressibility")
+
+# Set common title for the entire figure
+fig.suptitle("Linear Compressibility in Different Planes and 3D Visualization for BaCoI$_3$")
+
+# Save the combined plot as a PNG file
+plt.savefig("BaCoI3_linear_compressibility_combined.png", dpi=300)
+
+
+
+#shear modulus:
+# We will plot the shear modulus in the (xy) plane, that has theta = π/2 and phi is variable
+phi = np.linspace(0, 2 * np.pi, 200)
+f = np.vectorize(lambda x: material1.shear2D([np.pi / 2, x]))
+r = f(phi)
+
+fig, ax = plt.subplots(subplot_kw={'projection': 'polar'},figsize=(10.5,10.5))
+ax.plot(phi, r[0], color='blue', label='Minimal shear modulus')
+ax.plot(phi, r[1], color='red', label='Maximal shear modulus')
+ax.grid(True)
+ax.legend()
+plt.legend(bbox_to_anchor=(1, 1), loc='upper left')
+ax.set_title("Maximal and minimal shear modulus for BaCoI$_3$")
+plt.savefig("BaCoI3_shear_max_min modulus.png")
+
+
+
+#XY plane shead modulus:
+phi = np.linspace(0, 2 * np.pi, 200)
+f = np.vectorize(lambda x: material1.shear([np.pi/2, x, np.pi/2]))
+r = f(phi)
+fig, axs = plt.subplots(2, 2, figsize=(10.5, 10.5), subplot_kw={'projection': 'polar'})
+axs[0, 0].plot(phi, r, color='xkcd:dark green', label="XY Plane")
+axs[0, 0].fill(phi, r, color='green', alpha=0.25)
+axs[0, 0].set_title("XY Plane")
+axs[0, 0].grid(True)
+
+#XZ plane shear:
+theta = np.linspace(0, 2 * np.pi, 200)
+f = np.vectorize(lambda x: material1.shear([x, 0, np.pi/2]))
+r = f(theta)
+axs[0, 1].plot(theta, r, color='xkcd:dark green', label="XZ Plane")
+axs[0, 1].fill(theta, r, color='green', alpha=0.25)
+axs[0, 1].set_title("XZ Plane")
+axs[0, 1].grid(True)
+
+#YZ plane 
+theta = np.linspace(0, 2 * np.pi, 200)
+f = np.vectorize(lambda x: material1.shear([x, np.pi/2, np.pi/2]))
+r = f(theta)
+axs[1, 0].plot(theta, r, color='xkcd:dark green', label="YZ Plane")
+axs[1, 0].fill(theta, r, color='green', alpha=0.25)
+axs[1, 0].set_title("YZ Plane")
+axs[1, 0].grid(True)
+
+
+#Shear modulus 3D:
+f = np.vectorize(lambda x, y: material1.shear([x,y,np.pi/2]))
+theta, phi = spherical_grid()
+r = f(theta, phi)
+x, y, z = spherical_coord(r, theta, phi)
+
+axs[1, 1].remove()  # Remove the empty subplot
+ax_3d = fig.add_subplot(2, 2, 4, projection='3d')
+ax_3d.plot_surface(x, y, z, cmap='viridis')
+ax_3d.set_title("3D Visualization")
+surf = ax_3d.plot_surface(x, y, z, cmap='viridis')
+cbar = fig.colorbar(surf, ax=ax_3d, pad=0.1, shrink=0.8)
+cbar.set_label("Shear modulus")
+
+# Set common title for the entire figure
+fig.suptitle("Shear Modulus in Different Planes and 3D Visualization for BaCoI$_3$")
+
+# Save the combined plot as a PNG file
+plt.savefig("BaCoI3_shear_modulus_combined.png", dpi=300)
+
+
+#Poissons :
+
+#Poisson's_XY:
+fig, axs = plt.subplots(2, 2, figsize=(10.5, 10.5), subplot_kw={'projection': 'polar'})
+phi = np.linspace(0, 2 * np.pi, 200)
+f = np.vectorize(lambda x: material1.Poisson([np.pi/2, x, np.pi/2]))
+r = f(phi)
+axs[0, 0].plot(phi, r, color='xkcd:dark purple', label="XY Plane")
+axs[0, 0].fill(phi, r, color='xkcd:dark purple', alpha=0.5)
+axs[0, 0].set_title("XY Plane")
+axs[0, 0].grid(True)
+
+#XZ plane :
+theta = np.linspace(0, 2 * np.pi, 200)
+f = np.vectorize(lambda x: material1.Poisson([x, 0, np.pi/2]))
+r = f(theta)
+axs[0, 1].plot(theta, r, color='xkcd:dark purple', label="XZ Plane")
+axs[0, 1].fill(theta, r, color='xkcd:dark purple', alpha=0.5)
+axs[0, 1].set_title("XZ Plane")
+axs[0, 1].grid(True)
+
+#YZ plane 
+axs[1, 0].plot(theta, r, color='xkcd:dark purple', label="YZ Plane")
+axs[1, 0].fill(theta, r, color='xkcd:dark purple', alpha=0.5)
+axs[1, 0].set_title("YZ Plane")
+axs[1, 0].grid(True)
+
+#Poissons 3D:
+f = np.vectorize(lambda x, y: material1.Poisson([x,y,np.pi/2]))
+theta, phi = spherical_grid()
+r = f(theta, phi)
+x, y, z = spherical_coord(r, theta, phi)
+axs[1, 1].remove()  # Remove the empty subplot
+ax_3d = fig.add_subplot(2, 2, 4, projection='3d')
+ax_3d.plot_surface(x, y, z, cmap='twilight')
+ax_3d.set_title("3D Visualization")
+surf = ax_3d.plot_surface(x, y, z, cmap='twilight')
+cbar = fig.colorbar(surf, ax=ax_3d, pad=0.1, shrink=0.8)
+cbar.set_label("Poisson's ratio")
+
+# Set common title for the entire figure
+fig.suptitle("Poisson's Ratio in Different Planes and 3D Visualization for BaCoI$_3$")
+
+# Save the combined plot as a PNG file
+plt.savefig("BaCoI3_Poisson_combined.png", dpi=300)
+#XY plane Young Modulus: 
+fig, axs = plt.subplots(2, 2, figsize=(10.5, 10.5), subplot_kw={'projection': 'polar'})
+phi = np.linspace(0, 2 * np.pi, 200)
+f = np.vectorize(material1.Young_2)
+r = f(np.pi / 2, phi)
+axs[0, 0].plot(phi, r, color='xkcd:dark blue', label="XY Plane")
+axs[0, 0].fill(phi, r, color='xkcd:sky blue', alpha=0.75)
+axs[0, 0].set_title("XY Plane")
+axs[0, 0].grid(True)
+
+#XZ,YZ plane linear compresisbility:
+theta = np.linspace(0, 2*np.pi, 200)
+f = np.vectorize(material1.Young_2)
+r = f(theta, 0)
+axs[0, 1].plot(theta, r, color='xkcd:dark blue', label="XZ Plane")
+axs[0, 1].fill(theta, r, color='xkcd:sky blue', alpha=0.75)
+axs[0, 1].set_title("XZ Plane")
+axs[0, 1].grid(True)
+
+theta = np.linspace(0, 2*np.pi, 200)
+f = np.vectorize(material1.Young_2)
+r = f(theta, np.pi/2)
+axs[1, 0].plot(theta, r, color='xkcd:dark blue', label="YZ Plane")
+axs[1, 0].fill(theta, r, color='xkcd:sky blue', alpha=0.75)
+axs[1, 0].set_title("YZ Plane")
+axs[1, 0].grid(True)
+
+def spherical_grid():
+    theta = np.linspace(0, 2 * np.pi, 200)
+    phi = np.linspace(0, np.pi, 100)
+    return np.meshgrid(theta, phi)
+
+# Compute spherical coordinates
+def spherical_coord(r, theta, phi):
+    x = r * np.sin(phi) * np.cos(theta)
+    y = r * np.sin(phi) * np.sin(theta)
+    z = r * np.cos(phi)
+    return x, y, z
+
+
+#Young Modulus 3D:
+f = np.vectorize(material1.Young_2)
+theta, phi = spherical_grid()
+r = f(theta, phi)
+x, y, z = spherical_coord(r, theta, phi)
+axs[1, 1].remove()  # Remove the empty subplot
+ax_3d = fig.add_subplot(2, 2, 4, projection='3d')
+ax_3d.plot_surface(x, y, z, cmap='ocean')
+ax_3d.set_title("3D Visualization")
+surf = ax_3d.plot_surface(x, y, z, cmap='ocean')
+cbar = fig.colorbar(surf, ax=ax_3d, pad=0.1, shrink=0.8)
+cbar.set_label("Young Modulus")
+
+# Set common title for the entire figure
+fig.suptitle("Young Modulus in Different Planes and 3D Visualization for BaCoI$_3$")
+
+# Save the combined plot as a PNG file
+plt.savefig("BaCoI3_Young modulus_combined.png", dpi=300)
+
+
+
+
