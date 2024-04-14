@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pymatgen.io.vasp import Vasprun
 from pymatgen.electronic_structure.core import Spin, OrbitalType
-poscar='./BAND/POSCAR'
+poscar='./BAND/POSCAR' #Read the name of the material from POSCAR file"
 with open(poscar, 'r') as file:
     lines = file.readlines()
     sixth_line = lines[5].strip()
