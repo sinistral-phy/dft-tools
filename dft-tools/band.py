@@ -10,7 +10,7 @@ font = {'family' : 'serif',
     'weight' : 'normal',
     'size' : 13.0,
     }
-poscar='./BAND/POSCAR'
+poscar='./BAND/POSCAR' #Read the name of the element from the POSCAR file#
 with open(poscar, 'r') as file:
     lines = file.readlines()
     sixth_line = lines[5].strip()
