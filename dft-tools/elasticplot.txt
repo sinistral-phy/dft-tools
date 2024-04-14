@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d.axes3d as axes3d
 import numpy as np
 import pandas as pd
-
+#Modify the tensor_string according to Stiffness tensor#
 tensor_string = """
   219.890    137.847    120.221      0.000      0.000      0.000
     137.847    219.890    120.221      0.000      0.000      0.000
@@ -75,7 +75,7 @@ cbar = fig.colorbar(surf, ax=ax_3d, pad=0.1, shrink=0.8)
 cbar.set_label("Linear Compressibility")
 
 # Set common title for the entire figure
-fig.suptitle("Linear Compressibility in Different Planes and 3D Visualization for BaCoI$_3$")
+fig.suptitle("Linear Compressibility in Different Planes and 3D Visualization for BaCoI$_3$")     #Change the name of the material accordingly
 
 # Save the combined plot as a PNG file
 plt.savefig("BaCoI3_linear_compressibility_combined.png", dpi=300)
