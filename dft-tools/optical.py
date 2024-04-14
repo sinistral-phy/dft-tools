@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 font = {'family': 'serif', 'size': 12}
 plt.rc('font', **font)
 # Load data from files (adjust filenames and locations as needed)
+#There are four POSCARS each corresponding to the four elements under consideration
 poscar1='/home/ikaras/VASP/BaCoBr3/SC/POSCAR'
 with open(poscar1, 'r') as file:
     lines = file.readlines()
@@ -24,8 +25,8 @@ with open(poscar4, 'r') as file:
     lines = file.readlines()
     sixth_line = lines[5].strip()
 element4 = sixth_line.replace(" ", "")
-imag1=f'/home/ikaras/VASP/{element1}3/Optical/IMAG.in'
-real1=f'/home/ikaras/VASP/{element1}3/Optical/REAL.in'
+imag1=f'/home/ikaras/VASP/{element1}3/Optical/IMAG.in' #Reads the IMAG.in file of the first element
+real1=f'/home/ikaras/VASP/{element1}3/Optical/REAL.in' #Reads the REAL.in file of the first element
 imag1_data = np.loadtxt(imag1)
 real1_data = np.loadtxt(real1)
 energy1 = real1_data[:, 0]
