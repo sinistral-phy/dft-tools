@@ -33,9 +33,9 @@ for i in lines:
            klabel=klabel[:n]+'$'+klabel[n:n+2]+'$'+klabel[n+2:]
         group_labels.append(klabel)
         xtick.append(float(s.split()[1]))
-Bandup = './BAND/REFORMATTED_BAND_UP.dat'
+Bandup = './BAND/REFORMATTED_BAND_UP.dat' #Read the spin-up band structure datas#
 datas_up = np.loadtxt(Bandup, dtype=np.float64)
-Banddw = './BAND/REFORMATTED_BAND_DW.dat'
+Banddw = './BAND/REFORMATTED_BAND_DW.dat' #Read the spin-down band structure datas#
 datas_down = np.loadtxt(Banddw, dtype=np.float64)
 font = {'family': 'serif', 'size': 12}
 plt.rc('font', **font)
