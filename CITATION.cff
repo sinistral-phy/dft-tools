@@ -1,12 +1,12 @@
 cff-version: 1.2.0
-message: "If you use this codes, please cite it as below." 
-title: "dftoolsinistral"
+message: "If you use this code, please cite it as below."
+title: "Tool to Plot VASP-Generated DFT Data"
 authors:
   - family-names: "Rahman"
     given-names: "Arafat"
     affiliation: "University of Dhaka, Bangladesh"
     orcid: "https://orcid.org/0009-0001-1707-559X"
-date-released: "2023-10-18"  
+date-released: "2023-10-18"
 version: "1.0.0"
 repository-code: "https://github.com/sinistral-phy/dft-tools"
 license: "University of Dhaka"
